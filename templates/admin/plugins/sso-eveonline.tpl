@@ -41,6 +41,24 @@
 				</div>
 			</div>
 		</div>
+    <div class="row">
+      <div class="col-sm-2 col-xs-12 settings-header">
+        Account Transfers
+      </div>
+      <div class="col-sm-10 col-xs-12">
+        <div class="form-group">
+          <div class="checkbox">
+            <label for="allowAccountTransfers" class="mdl-switch mdl-js-switch mdl-js-ripple-effect">
+              <input type="checkbox" class="mdl-switch__input" id="allowAccountTransfers" data-field="allowAccountTransfers" name="allowAccountTransfers" />
+              <span class="mdl-switch__label">Allow NodeBB forum account ownership to be transferred to another EVE Online Character.</span>
+            </label>
+            <p>
+              If this is enabled, a user that is logged in can transfer the account ownership to another EVE Online SSO character. This can be done by navigating to /login or visiting their profile page and clicking on "Click here to associated with EVE Online". It's possible for users to accidentally transfer ownership to alt accounts if this is enabled.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 		<div class="row">
 			<div class="col-sm-2 col-xs-12 settings-header">
 				Group Mapping
