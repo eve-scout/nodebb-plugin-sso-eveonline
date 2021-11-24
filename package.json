@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-sso-eveonline",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "NodeBB EVE Online SSO",
   "keywords": [
     "nodebb",
@@ -34,6 +34,7 @@
     "compatibility": "^1.1.0"
   },
   "dependencies": {
+    "async": "^3.2.2",
     "passport-eveonline-sso": "^0.9.3"
   }
 }
