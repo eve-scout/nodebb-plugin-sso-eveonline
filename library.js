@@ -2,21 +2,44 @@
 
   'use strict';
 
-  var	user = module.parent.require('./user'),
-    Groups = module.parent.require('./groups'),
-    meta = module.parent.require('./meta'),
-    SocketAdmin = module.parent.require('./socket.io/admin').plugins,
-    db = module.parent.require('./database'),
+  var	user = require.main.require('./src/user'),
+    Groups = require.main.require('./src/groups'),
+    meta = require.main.require('./src/meta'),
+    SocketAdmin = require.main.require('./src/socket.io/admin').plugins,
+    db = require.main.require('./src/database'),
     async = require('async'),
     passport = module.parent.require('passport'),
     PassportEveOnlineSSO = require('passport-eveonline-sso').Strategy,
     nconf = module.parent.require('nconf'),
     winston = module.parent.require('winston'),
     https = module.parent.require('https'),
-    helpers = module.parent.require('./routes/helpers'),
+    helpers = require.main.require('./src/routes/helpers'),
     app;
 
-  var authenticationController = module.parent.require('./controllers/authentication');
+  var authenticationController = require.main.require('./src/controllers/authentication');
+
+  // By default Passport Oauth2 strategies generate a session.state value and store it to compare on the roundtrip
+  // NodeBB already generates this code, but stores it in session.ssoState
+  // This custom "store" works around this problem.
+  var CustomPassportStore = {
+    store: function(req, callback) {
+      if (!req.session) { return callback(new Error('OAuth 2.0 authentication requires session support when using state. Did you forget to use express-session middleware?')); }
+
+      callback();
+    },
+    verify: function(req, providedState, callback) {
+      if (!req.session) { return callback(new Error('OAuth 2.0 authentication requires session support when using state. Did you forget to use express-session middleware?')); }
+
+      if (req.session.ssoState !== providedState) {
+        return callback(null, false, { message: 'Invalid authorization request state.' });
+      }
+
+      // remove this because some people press the back button after realizing they logged in with the wrong user
+      delete req.session.ssoState;
+    
+      return callback(null, true);
+    },
+  };
 
   var constants = Object.freeze({
     'name': 'EVE Online',
@@ -223,7 +246,8 @@
         scope: 'esi-characters.read_titles.v1',
         callbackURL: nconf.get('url') + '/auth/eveonline/callback',
         failureUrl: nconf.get('url') + '/auth/eveonline/error',
-        passReqToCallback: true
+        passReqToCallback: true,
+        store: CustomPassportStore,
       }, function (req, accessToken, refreshToken, profile, done) {
         EveOnlineSSO.completeProfile(profile, accessToken, refreshToken, function (err, profile) {
           if (err) {
