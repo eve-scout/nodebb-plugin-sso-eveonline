@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-sso-eveonline",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "NodeBB EVE Online SSO",
   "keywords": [
     "nodebb",
